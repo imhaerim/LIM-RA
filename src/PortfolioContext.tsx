@@ -50,7 +50,13 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   });
 
   useEffect(() => {
-    localStorage.setItem('portfolio_data', JSON.stringify(data));
+    try {
+      localStorage.setItem('portfolio_data', JSON.stringify(data));
+    } catch (e) {
+      if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+        console.error('localStorage 용량 초과: 이미지 크기를 줄여주세요.');
+      }
+    }
   }, [data]);
 
   const updateData = (path: string, value: any) => {

@@ -5,6 +5,33 @@ import { usePortfolio } from '../PortfolioContext';
 import { INITIAL_DATA } from '../constants';
 import { toast } from 'sonner';
 
+const compressImage = (file: File, maxWidth = 1200, quality = 0.8): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('Canvas context unavailable'));
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = reader.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
 interface AdminPanelProps {
   isOpen: boolean;
   onClose: () => void;
@@ -30,13 +57,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
     const files = e.target.files;
     if (!files) return;
 
-    const newProjects = [...data.projects];
-    const project = newProjects[projectIdx];
-
     Array.from(files).forEach((file: File) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
+      compressImage(file).then(base64String => {
         setData(prev => {
           const newProjects = [...prev.projects];
           newProjects[projectIdx] = {
@@ -45,9 +67,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
           };
           return { ...prev, projects: newProjects };
         });
-      };
-      reader.readAsDataURL(file);
+      }).catch(() => toast.error('이미지 업로드 실패'));
     });
+    e.target.value = '';
   };
 
   const removeImage = (projectIdx: number, imageIdx: number) => {
@@ -162,11 +184,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                 onChange={(e) => {
                                   const file = e.target.files?.[0];
                                   if (file) {
-                                    const reader = new FileReader();
-                                    reader.onloadend = () => {
-                                      updateData('hero.imageUrl', reader.result as string);
-                                    };
-                                    reader.readAsDataURL(file);
+                                    compressImage(file).then(base64 => {
+                                      updateData('hero.imageUrl', base64);
+                                    }).catch(() => toast.error('이미지 업로드 실패'));
+                                    e.target.value = '';
                                   }
                                 }}
                               />
@@ -553,13 +574,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                     onChange={(e) => {
                                       const file = e.target.files?.[0];
                                       if (file) {
-                                        const reader = new FileReader();
-                                        reader.onloadend = () => {
-                                          const newItems = [...data.design.items];
-                                          newItems[idx].beforeUrl = reader.result as string;
-                                          setData({ ...data, design: { ...data.design, items: newItems } });
-                                        };
-                                        reader.readAsDataURL(file);
+                                        compressImage(file).then(base64 => {
+                                          setData(prev => {
+                                            const newItems = prev.design.items.map((item, i) =>
+                                              i === idx ? { ...item, beforeUrl: base64 } : item
+                                            );
+                                            return { ...prev, design: { ...prev.design, items: newItems } };
+                                          });
+                                        }).catch(() => toast.error('이미지 업로드 실패'));
+                                        e.target.value = '';
                                       }
                                     }}
                                   />
@@ -581,13 +604,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                     onChange={(e) => {
                                       const file = e.target.files?.[0];
                                       if (file) {
-                                        const reader = new FileReader();
-                                        reader.onloadend = () => {
-                                          const newItems = [...data.design.items];
-                                          newItems[idx].afterUrl = reader.result as string;
-                                          setData({ ...data, design: { ...data.design, items: newItems } });
-                                        };
-                                        reader.readAsDataURL(file);
+                                        compressImage(file).then(base64 => {
+                                          setData(prev => {
+                                            const newItems = prev.design.items.map((item, i) =>
+                                              i === idx ? { ...item, afterUrl: base64 } : item
+                                            );
+                                            return { ...prev, design: { ...prev.design, items: newItems } };
+                                          });
+                                        }).catch(() => toast.error('이미지 업로드 실패'));
+                                        e.target.value = '';
                                       }
                                     }}
                                   />
