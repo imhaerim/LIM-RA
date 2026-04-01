@@ -49,7 +49,7 @@ export const Home: React.FC = () => {
           <img 
             src={data.hero.imageUrl} 
             alt="Main Portfolio" 
-            className="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-1000"
+            className="w-full h-full object-contain grayscale-[20%] hover:grayscale-0 transition-all duration-1000"
             referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 border-[24px] border-white pointer-events-none"></div>

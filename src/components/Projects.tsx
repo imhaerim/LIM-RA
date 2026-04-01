@@ -64,7 +64,7 @@ export const Projects: React.FC = () => {
                       <img 
                         src={url} 
                         alt={`${project.title} ${imgIdx + 1}`} 
-                        className="w-full h-full object-cover grayscale-[10%] hover:grayscale-0 transition-all duration-700"
+                        className="w-full h-full object-contain grayscale-[10%] hover:grayscale-0 transition-all duration-700"
                         referrerPolicy="no-referrer"
                       />
                     </motion.div>

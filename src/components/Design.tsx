@@ -29,13 +29,13 @@ export const Design: React.FC = () => {
                     <div className="space-y-4">
                       <span className="text-[10px] uppercase tracking-widest text-ink/40 block text-center">Before</span>
                       <div className="aspect-[3/4] overflow-hidden bg-beige/50 grayscale opacity-40">
-                        <img src={item.beforeUrl} alt="Before" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        <img src={item.beforeUrl} alt="Before" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                       </div>
                     </div>
                     <div className="space-y-4">
                       <span className="text-[10px] uppercase tracking-widest text-ink/40 block text-center">After</span>
                       <div className="aspect-[3/4] overflow-hidden bg-beige shadow-2xl">
-                        <img src={item.afterUrl} alt="After" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        <img src={item.afterUrl} alt="After" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                       </div>
                     </div>
                   </div>
